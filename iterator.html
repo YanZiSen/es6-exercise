@@ -1,0 +1,55 @@
+<DOCTYPE HTML>
+<HTML>
+	<head>
+		<meta charset="utf-8">
+		<title>iterator</title>
+	</head>
+	<body>
+		<h1>promise到async</h1>
+		<pre>
+			{
+				let arr = [1,2,3]
+				let iterator = arr[Symbol.iterator]()
+				iterator.next()
+				iterator.next()
+				iterator.next()
+				iterator.next()
+				for (let value of arr) {
+					// let of 底层应用的是 iterator接口，数组内部实现了这个接口
+					console.log('value',value)
+				}
+			}
+			{
+				// obj 遍历需要自己实现iterator接口
+ 				let obj = {
+					key1: [3,4,5,6],
+					key2: [7,6,4,2],
+					[Symbol.iterator](){
+						let index = 0;
+						let self = this;
+						let arr = self.key1.concat(self.key2);
+						let length = arr.length
+						return {
+							next () {
+								if (index < length) {
+									return {
+										value: arr[index++], // 注意index没有写在外面
+										done: false
+									}
+								}else{
+									return {
+										value: arr[index++],
+										done: true
+									}
+								}
+							}
+						}
+					}
+				}
+				for (let key of obj) {
+					console.log('key', key)
+				}
+			}
+		</pre>
+	</body>
+</HTML>

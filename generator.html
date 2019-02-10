@@ -1,0 +1,34 @@
+<DOCTYPE HTML>
+<HTML>
+	<head>
+		<meta charset="utf-8">
+		<title>generator</title>
+	</head>
+	<body>
+		<h1>generator</h1>
+		<pre>
+			{
+				function* status () {
+					yield 5
+					yield 6
+					return 3
+				}
+				let test = status()
+				console.log('name',test.next())  // 每次调用返回{value:'kkk',done:false}
+				test.next()
+				test.next()
+			}
+			{ // 遍历对象，结合iterator接口 返回值是一样的
+				let obj = {}
+				obj[Symbol.iterator] = function* traval(){
+					yield 3
+					yield 4
+					yield 5
+				}
+			}
+			{ // 状态机
+
+			}
+		</pre>
+	</body>
+</HTML>

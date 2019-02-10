@@ -1,0 +1,52 @@
+<DOCTYPE HTML>
+<HTML>
+	<head>
+		<meta charset="utf-8">
+		<title>promise->async</title>
+	</head>
+	<body>
+		<h1>promise到async</h1>
+		<pre>
+			function calculate2Seconds(x) {
+				return new Promise((resolve,reject)=>{
+					setTimeout(()=>{
+						resolve(x*10)
+					},2000)
+				})
+			}
+			funnction addPromise(x) {
+				return new Promise((resolve,reject)=>{
+					calculate2Seconds(10).then(a => {
+						caldulate2Seconds(20).then(b => {
+							calculate2Senconds(30).then(c => {
+								resolve(x+a+b+c)
+							})
+						})
+					})
+				})
+			}
+
+			addPromise(3).then(sum => {console.log(sum)})
+			// 错误示范
+			console.log(calculate2Seconds(10)+calculate2Seconds(20)+calculate2Seconds(30))
+		</pre>
+		<pre>
+			function calculate2Seconds(x) {
+				return new Promise((resolve,reject)=>{
+					setTimeout(()=>{
+						resolve(x*10)
+					},2000)
+				})
+			}
+			async function addAsync(x) {
+			  const a =await calculate2Seconds(10)
+			  const b =await calculate2Seconds(20)
+			  const c =await calculate2Seconds(30)
+				return x + a + b + c
+			}
+			addAsync(10).then(sum => {
+				console.log(sum)
+			})
+		</pre>
+	</body>
+</HTML>
