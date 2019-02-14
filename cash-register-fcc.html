@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+</head>
+<body>
+<script>
+  function checkCashRegister(price, cash, cid) {
+    var change = [];
+    // Here is your change, ma'am.
+    var diff = cash - price;
+    var totalMoney = 0;
+    // var currencyUnitNo = [100, 20, 10, 5, 1, 0.25, 0.1, 0.05, 0.01];
+    // var currencyUnit = ['ONE HUNDRED','TWENTY','TEN','FIVE','ONE','QUARTER','DIME','NICKEL','PENNY'];
+    var mapping = {
+      'ONE HUNDRED': 100,
+      'TWENTY': 20,
+      'TEN': 10,
+      'FIVE': 5,
+      'ONE': 1,
+      'QUARTER': 0.25,
+      'DIME': 0.1,
+      'NICKEL': 0.05,
+      'PENNY': 0.01
+    }
+    var drawerUnitObj = {
+      [Symbol.iterator]() {
+        var currencyUnit = ['ONE HUNDRED', 'TWENTY', 'TEN', 'FIVE', 'ONE', 'QUARTER', 'DIME',
+          'NICKEL', 'PENNY'];
+        var index = 0;
+        var self = this;
+        const next = function () {
+          if (index === currencyUnit.length) {
+            return {
+              done: true
+            }
+          }
+          var unitKey = currencyUnit[index++]
+          if (unitKey in self) {
+            return {
+              value: self[unitKey]
+            }
+          } else {
+            next()
+          }
+        }
+        return {
+          next: next
+        }
+      }
+    }
+    for (let [key, count] of cid) {
+      totalMoney += count;
+      drawerUnitObj[key] = {
+        count: count / mapping[key],
+        value: mapping[key],
+        unit: key
+      }
+    }
+    if (totalMoney < diff) {
+      return {status: 'INSUFFICIENT_FUNDS', change: []}
+    } else if (totalMoney === diff) {
+      return {status: 'CLOSED', change: cid}
+    }
+    let cushIterator = drawerUnitObj[Symbol.iterator](), travelValue = {}
+    while (diff && (travelValue = cushIterator.next()).value) {
+      let {value: {value, count, unit}} = travelValue
+      var devide = parseInt(diff / value)
+      var decimalLen = (diff.toString().split('.')[1] || '').length
+      var baseNumber = Math.pow(10, decimalLen)
+      var fixInteger = Math.round(diff * baseNumber)
+      var devideValue = value * baseNumber
+      diff = fixInteger % devideValue
+      if (devide > 0) {
+        if (devide > count) {
+          diff += (devide - count) * value * baseNumber
+          devide = count
+        }
+        change.push([unit, devide * value])
+      }
+      diff = diff / baseNumber
+    }
+    if (diff && !travelValue.value) {
+      return {status: 'INSUFFICIENT_FUNDS', change: []}
+    }
+    return {status: 'OPEN', change: change};
+  }
+
+  // Example cash-in-drawer array:
+  // [["PENNY", 1.01],
+  // ["NICKEL", 2.05],
+  // ["DIME", 3.1],
+  // ["QUARTER", 4.25],
+  // ["ONE", 90],
+  // ["FIVE", 55],
+  // ["TEN", 20],
+  // ["TWENTY", 60],
+  // ["ONE HUNDRED", 100]]
+
+  checkCashRegister(19.5, 20,
+      [["PENNY", 1.01], ["NICKEL", 2.05], ["DIME", 3.1], ["QUARTER", 4.25], ["ONE", 90],
+        ["FIVE", 55], ["TEN", 20], ["TWENTY", 60], ["ONE HUNDRED", 100]]);
+</script>
+</body>
+</html>
